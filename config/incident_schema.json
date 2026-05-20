@@ -1,0 +1,316 @@
+{
+  "@context": {
+    "@vocab": "http://schema.org/",
+    "incident": "http://incident-resolution.ai/ontology#",
+    "hasRootCause": {
+      "@id": "incident:hasRootCause",
+      "@type": "@id"
+    },
+    "hasSuggestedFix": {
+      "@id": "incident:hasSuggestedFix",
+      "@type": "@id"
+    },
+    "affectsAPI": {
+      "@id": "incident:affectsAPI",
+      "@type": "@id"
+    },
+    "hasLogEntry": {
+      "@id": "incident:hasLogEntry",
+      "@type": "@id"
+    },
+    "relatedTo": {
+      "@id": "incident:relatedTo",
+      "@type": "@id"
+    },
+    "dependsOn": {
+      "@id": "incident:dependsOn",
+      "@type": "@id"
+    },
+    "triggeredBy": {
+      "@id": "incident:triggeredBy",
+      "@type": "@id"
+    },
+    "resolvedBy": {
+      "@id": "incident:resolvedBy",
+      "@type": "@id"
+    },
+    "impacts": {
+      "@id": "incident:impacts",
+      "@type": "@id"
+    }
+  },
+  "@graph": [
+    {
+      "@id": "incident:Incident",
+      "@type": "Class",
+      "name": "Incident",
+      "description": "Represents a production incident or error event",
+      "properties": {
+        "incidentId": {
+          "@type": "Text",
+          "description": "Unique identifier for the incident"
+        },
+        "timestamp": {
+          "@type": "DateTime",
+          "description": "When the incident occurred"
+        },
+        "severity": {
+          "@type": "Text",
+          "description": "Severity level: CRITICAL, HIGH, MEDIUM, LOW"
+        },
+        "status": {
+          "@type": "Text",
+          "description": "Current status: OPEN, IN_PROGRESS, RESOLVED, CLOSED"
+        },
+        "title": {
+          "@type": "Text",
+          "description": "Brief title of the incident"
+        },
+        "description": {
+          "@type": "Text",
+          "description": "Detailed description of the incident"
+        },
+        "confidence": {
+          "@type": "Text",
+          "description": "AI confidence level: HIGH, MEDIUM, LOW"
+        }
+      },
+      "relationships": [
+        "hasRootCause",
+        "hasSuggestedFix",
+        "affectsAPI",
+        "hasLogEntry",
+        "triggeredBy"
+      ]
+    },
+    {
+      "@id": "incident:RootCause",
+      "@type": "Class",
+      "name": "RootCause",
+      "description": "Identified root cause of an incident",
+      "properties": {
+        "causeId": {
+          "@type": "Text",
+          "description": "Unique identifier for the root cause"
+        },
+        "root_cause": {
+          "@type": "Text",
+          "description": "Description of the root cause"
+        },
+        "category": {
+          "@type": "Text",
+          "description": "Category: NETWORK, BACKEND, AUTHENTICATION, CONFIGURATION, RESOURCE"
+        },
+        "confidence": {
+          "@type": "Number",
+          "description": "Confidence score (0-100)"
+        },
+        "detectedAt": {
+          "@type": "DateTime",
+          "description": "When the root cause was identified"
+        }
+      },
+      "relationships": [
+        "relatedTo",
+        "triggeredBy"
+      ]
+    },
+    {
+      "@id": "incident:SuggestedFix",
+      "@type": "Class",
+      "name": "SuggestedFix",
+      "description": "Recommended fix or resolution step",
+      "properties": {
+        "fixId": {
+          "@type": "Text",
+          "description": "Unique identifier for the fix"
+        },
+        "suggested_fixes": {
+          "@type": "Text",
+          "description": "Description of the suggested fix"
+        },
+        "priority": {
+          "@type": "Number",
+          "description": "Priority order (1 = highest)"
+        },
+        "estimatedTime": {
+          "@type": "Text",
+          "description": "Estimated time to implement"
+        },
+        "complexity": {
+          "@type": "Text",
+          "description": "Complexity level: LOW, MEDIUM, HIGH"
+        },
+        "status": {
+          "@type": "Text",
+          "description": "Status: PENDING, IN_PROGRESS, COMPLETED, FAILED"
+        }
+      },
+      "relationships": [
+        "resolvedBy",
+        "dependsOn"
+      ]
+    },
+    {
+      "@id": "incident:API",
+      "@type": "Class",
+      "name": "API",
+      "description": "API endpoint affected by the incident",
+      "properties": {
+        "apiId": {
+          "@type": "Text",
+          "description": "Unique identifier for the API"
+        },
+        "affected_apis": {
+          "@type": "Text",
+          "description": "API endpoint path"
+        },
+        "method": {
+          "@type": "Text",
+          "description": "HTTP method: GET, POST, PUT, DELETE, PATCH"
+        },
+        "statusCode": {
+          "@type": "Number",
+          "description": "HTTP status code returned"
+        },
+        "errorRate": {
+          "@type": "Number",
+          "description": "Error rate percentage"
+        },
+        "requestCount": {
+          "@type": "Number",
+          "description": "Number of requests affected"
+        }
+      },
+      "relationships": [
+        "dependsOn",
+        "impacts"
+      ]
+    },
+    {
+      "@id": "incident:LogEntry",
+      "@type": "Class",
+      "name": "LogEntry",
+      "description": "Individual log entry related to the incident",
+      "properties": {
+        "logId": {
+          "@type": "Text",
+          "description": "Unique identifier for the log entry"
+        },
+        "timestamp": {
+          "@type": "DateTime",
+          "description": "When the log was generated"
+        },
+        "logType": {
+          "@type": "Text",
+          "description": "Type: DATAPOWER, APIC, JAVA, GENERAL"
+        },
+        "errorMessage": {
+          "@type": "Text",
+          "description": "Error message from the log"
+        },
+        "stackTrace": {
+          "@type": "Text",
+          "description": "Stack trace if available"
+        },
+        "severity": {
+          "@type": "Text",
+          "description": "Log severity level"
+        }
+      },
+      "relationships": [
+        "triggeredBy"
+      ]
+    },
+    {
+      "@id": "incident:BackendService",
+      "@type": "Class",
+      "name": "BackendService",
+      "description": "Backend service involved in the incident",
+      "properties": {
+        "serviceId": {
+          "@type": "Text",
+          "description": "Unique identifier for the service"
+        },
+        "serviceName": {
+          "@type": "Text",
+          "description": "Name of the backend service"
+        },
+        "endpoint": {
+          "@type": "URL",
+          "description": "Service endpoint URL"
+        },
+        "status": {
+          "@type": "Text",
+          "description": "Service status: UP, DOWN, DEGRADED"
+        },
+        "responseTime": {
+          "@type": "Number",
+          "description": "Average response time in milliseconds"
+        }
+      },
+      "relationships": [
+        "impacts",
+        "relatedTo"
+      ]
+    },
+    {
+      "@id": "incident:AdditionalCheck",
+      "@type": "Class",
+      "name": "AdditionalCheck",
+      "description": "Additional diagnostic check to perform",
+      "properties": {
+        "checkId": {
+          "@type": "Text",
+          "description": "Unique identifier for the check"
+        },
+        "description": {
+          "@type": "Text",
+          "description": "Description of the check to perform"
+        },
+        "status": {
+          "@type": "Text",
+          "description": "Status: PENDING, COMPLETED, SKIPPED"
+        },
+        "result": {
+          "@type": "Text",
+          "description": "Result of the check"
+        }
+      },
+      "relationships": [
+        "relatedTo"
+      ]
+    },
+    {
+      "@id": "incident:GitHubIssue",
+      "@type": "Class",
+      "name": "GitHubIssue",
+      "description": "GitHub issue created for the incident",
+      "properties": {
+        "issueId": {
+          "@type": "Text",
+          "description": "GitHub issue number"
+        },
+        "url": {
+          "@type": "URL",
+          "description": "URL to the GitHub issue"
+        },
+        "title": {
+          "@type": "Text",
+          "description": "Issue title"
+        },
+        "labels": {
+          "@type": "Text",
+          "description": "Issue labels"
+        },
+        "createdAt": {
+          "@type": "DateTime",
+          "description": "When the issue was created"
+        }
+      },
+      "relationships": [
+        "relatedTo"
+      ]
+    }
+  ]
+}

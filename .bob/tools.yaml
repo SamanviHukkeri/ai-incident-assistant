@@ -1,0 +1,4 @@
+tools:
+  - name: analyze_incident
+    description: Analyze production incidents
+    type: mcp

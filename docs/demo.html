@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Incident Resolution Assistant - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .upload-box {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-box:hover {
+            border-color: #764ba2;
+            background: #f8f9ff;
+        }
+        
+        .upload-box input[type="file"] {
+            display: none;
+        }
+        
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .result-section {
+            margin-bottom: 25px;
+        }
+        
+        .result-section h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .severity-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .severity-critical {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .severity-high {
+            background: #fd7e14;
+            color: white;
+        }
+        
+        .severity-medium {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .severity-low {
+            background: #28a745;
+            color: white;
+        }
+        
+        .fix-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .fix-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        
+        .api-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .api-tag {
+            background: #e0e7ff;
+            color: #667eea;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Incident Resolution Assistant</h1>
+            <p>Upload logs or paste error messages for instant AI analysis</p>
+        </div>
+        
+        <div class="card">
+            <h2 style="margin-bottom: 20px;">📤 Submit Incident</h2>
+            
+            <div class="upload-section">
+                <div>
+                    <h3 style="margin-bottom: 15px;">Upload Log File</h3>
+                    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">📁</div>
+                        <p><strong>Click to upload</strong></p>
+                        <p style="color: #666; font-size: 14px; margin-top: 10px;">
+                            Supports: DataPower, APIC, Java logs
+                        </p>
+                        <input type="file" id="fileInput" accept=".log,.txt">
+                    </div>
+                    <button class="button" onclick="analyzeFile()">Analyze Log File</button>
+                </div>
+                
+                <div>
+                    <h3 style="margin-bottom: 15px;">Or Paste Error Message</h3>
+                    <textarea id="errorText" placeholder="Paste your error message or log content here...
+
+Example:
+HTTP 500 Internal Server Error
+Backend connection timeout after 30 seconds
+API: /member/inquiry"></textarea>
+                    <button class="button" onclick="analyzeText()">Analyze Error Message</button>
+                </div>
+            </div>
+            
+            <div class="error" id="errorMsg"></div>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>🔍 Analyzing incident with AI...</p>
+        </div>
+        
+        <div class="card results" id="results">
+            <h2 style="margin-bottom: 20px;">📊 Analysis Results</h2>
+            
+            <div class="result-section">
+                <h3>🔍 Root Cause</h3>
+                <p id="rootCause" style="font-size: 16px; line-height: 1.6;"></p>
+                <div style="margin-top: 10px;">
+                    <span class="severity-badge" id="severityBadge"></span>
+                </div>
+            </div>
+            
+            <div class="result-section">
+                <h3>🔧 Suggested Fixes</h3>
+                <ol class="fix-list" id="fixList"></ol>
+            </div>
+            
+            <div class="result-section">
+                <h3>🎯 Affected APIs</h3>
+                <div class="api-list" id="apiList"></div>
+            </div>
+            
+            <div class="result-section" id="githubSection" style="display: none;">
+                <h3>📝 GitHub Issue</h3>
+                <p>Issue created: <a id="githubLink" href="#" target="_blank" style="color: #667eea;"></a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000';
+        
+        async function analyzeFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showError('Please select a file first');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('create_github_issue', 'false');
+            
+            showLoading();
+            hideError();
+            
+            try {
+                const response = await fetch(`${API_BASE}/analyze/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                showError(`Analysis failed: ${error.message}. Make sure the server is running on ${API_BASE}`);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        async function analyzeText() {
+            const errorText = document.getElementById('errorText').value.trim();
+            
+            if (!errorText) {
+                showError('Please enter an error message');
+                return;
+            }
+            
+            showLoading();
+            hideError();
+            
+            try {
+                const response = await fetch(`${API_BASE}/analyze/manual`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        error_message: errorText,
+                        log_type: 'GENERAL',
+                        create_github_issue: false
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                displayResults(data);
+            } catch (error) {
+                showError(`Analysis failed: ${error.message}. Make sure the server is running on ${API_BASE}`);
+            } finally {
+                hideLoading();
+            }
+        }
+        
+        function displayResults(data) {
+            document.getElementById('rootCause').textContent = data.root_cause;
+            
+            const severityBadge = document.getElementById('severityBadge');
+            severityBadge.textContent = data.severity;
+            severityBadge.className = `severity-badge severity-${data.severity.toLowerCase()}`;
+            
+            const fixList = document.getElementById('fixList');
+            fixList.innerHTML = '';
+            data.suggested_fixes.forEach(fix => {
+                const li = document.createElement('li');
+                li.textContent = fix;
+                fixList.appendChild(li);
+            });
+            
+            const apiList = document.getElementById('apiList');
+            apiList.innerHTML = '';
+            if (data.affected_apis && data.affected_apis.length > 0) {
+                data.affected_apis.forEach(api => {
+                    const span = document.createElement('span');
+                    span.className = 'api-tag';
+                    span.textContent = api;
+                    apiList.appendChild(span);
+                });
+            } else {
+                apiList.innerHTML = '<p style="color: #666;">No specific APIs identified</p>';
+            }
+            
+            if (data.github_issue_url) {
+                document.getElementById('githubSection').style.display = 'block';
+                const link = document.getElementById('githubLink');
+                link.href = data.github_issue_url;
+                link.textContent = data.github_issue_url;
+            }
+            
+            document.getElementById('results').classList.add('show');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function showLoading() {
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('results').classList.remove('show');
+        }
+        
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('show');
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+        
+        function hideError() {
+            document.getElementById('errorMsg').classList.remove('show');
+        }
+        
+        // File input change handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const fileName = e.target.files[0]?.name;
+            if (fileName) {
+                document.querySelector('.upload-box p strong').textContent = fileName;
+            }
+        });
+    </script>
+</body>
+</html>

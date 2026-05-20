@@ -1,0 +1,226 @@
+{
+  "@context": {
+    "@vocab": "http://schema.org/",
+    "incident": "http://incident-resolution.ai/ontology#",
+    "hasRootCause": {
+      "@id": "incident:hasRootCause",
+      "@type": "@id"
+    },
+    "hasSuggestedFix": {
+      "@id": "incident:hasSuggestedFix",
+      "@type": "@id"
+    },
+    "affectsAPI": {
+      "@id": "incident:affectsAPI",
+      "@type": "@id"
+    },
+    "hasLogEntry": {
+      "@id": "incident:hasLogEntry",
+      "@type": "@id"
+    },
+    "relatedTo": {
+      "@id": "incident:relatedTo",
+      "@type": "@id"
+    },
+    "dependsOn": {
+      "@id": "incident:dependsOn",
+      "@type": "@id"
+    },
+    "triggeredBy": {
+      "@id": "incident:triggeredBy",
+      "@type": "@id"
+    },
+    "resolvedBy": {
+      "@id": "incident:resolvedBy",
+      "@type": "@id"
+    },
+    "impacts": {
+      "@id": "incident:impacts",
+      "@type": "@id"
+    }
+  },
+  "@graph": [
+    {
+      "@id": "incident:inc-2026-05-19-001",
+      "@type": "incident:Incident",
+      "incidentId": "incident:inc-2026-05-19-001",
+      "timestamp": "2026-05-19T14:30:00Z",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "title": "Backend connection timeout affecting member inquiry API",
+      "description": "Multiple API endpoints experiencing timeout errors when connecting to backend member service. Error rate increased to 85% over the last 15 minutes.",
+      "confidence": "HIGH",
+      "hasRootCause": ["incident:cause-2026-05-19-001"],
+      "hasSuggestedFix": [
+        "incident:fix-2026-05-19-001",
+        "incident:fix-2026-05-19-002",
+        "incident:fix-2026-05-19-003",
+        "incident:fix-2026-05-19-004"
+      ],
+      "affectsAPI": [
+        "incident:api-member-inquiry",
+        "incident:api-claim-details"
+      ],
+      "hasLogEntry": [
+        "incident:log-2026-05-19-001",
+        "incident:log-2026-05-19-002",
+        "incident:log-2026-05-19-003"
+      ],
+      "triggeredBy": ["incident:log-2026-05-19-001"]
+    },
+    {
+      "@id": "incident:cause-2026-05-19-001",
+      "@type": "incident:RootCause",
+      "causeId": "incident:cause-2026-05-19-001",
+      "root_cause": "Backend member service connection timeout due to firewall rule blocking port 8443. Network team deployed new firewall rules at 14:25 UTC that inadvertently blocked traffic to the backend service.",
+      "category": "NETWORK",
+      "confidence": 90,
+      "detectedAt": "2026-05-19T14:31:00Z",
+      "relatedTo": ["incident:service-member-backend"],
+      "triggeredBy": ["incident:log-2026-05-19-002"]
+    },
+    {
+      "@id": "incident:fix-2026-05-19-001",
+      "@type": "incident:SuggestedFix",
+      "fixId": "incident:fix-2026-05-19-001",
+      "suggested_fixes": "Check firewall rules between API gateway (10.10.10.50) and backend member service (10.20.30.40:8443). Verify port 8443 is open in both directions.",
+      "priority": 1,
+      "estimatedTime": "15-30 minutes",
+      "complexity": "LOW",
+      "status": "PENDING"
+    },
+    {
+      "@id": "incident:fix-2026-05-19-002",
+      "@type": "incident:SuggestedFix",
+      "fixId": "incident:fix-2026-05-19-002",
+      "suggested_fixes": "Verify backend member service is running and accessible on port 8443. Check service health endpoint at https://10.20.30.40:8443/health",
+      "priority": 2,
+      "estimatedTime": "15-30 minutes",
+      "complexity": "LOW",
+      "status": "PENDING",
+      "dependsOn": ["incident:fix-2026-05-19-001"]
+    },
+    {
+      "@id": "incident:fix-2026-05-19-003",
+      "@type": "incident:SuggestedFix",
+      "fixId": "incident:fix-2026-05-19-003",
+      "suggested_fixes": "Review network connectivity and latency between gateway and backend. Run traceroute and ping tests to identify network path issues.",
+      "priority": 3,
+      "estimatedTime": "30-60 minutes",
+      "complexity": "MEDIUM",
+      "status": "PENDING"
+    },
+    {
+      "@id": "incident:fix-2026-05-19-004",
+      "@type": "incident:SuggestedFix",
+      "fixId": "incident:fix-2026-05-19-004",
+      "suggested_fixes": "Check backend service logs at /var/log/member-service/ for any errors or connection attempts from gateway IP 10.10.10.50",
+      "priority": 4,
+      "estimatedTime": "15-30 minutes",
+      "complexity": "LOW",
+      "status": "PENDING"
+    },
+    {
+      "@id": "incident:api-member-inquiry",
+      "@type": "incident:API",
+      "apiId": "incident:api-member-inquiry",
+      "affected_apis": "/member/inquiry",
+      "method": "POST",
+      "statusCode": 504,
+      "errorRate": 85.5,
+      "requestCount": 342,
+      "dependsOn": ["incident:service-member-backend"],
+      "impacts": ["incident:api-claim-details"]
+    },
+    {
+      "@id": "incident:api-claim-details",
+      "@type": "incident:API",
+      "apiId": "incident:api-claim-details",
+      "affected_apis": "/claim/details",
+      "method": "GET",
+      "statusCode": 504,
+      "errorRate": 78.2,
+      "requestCount": 156,
+      "dependsOn": ["incident:service-member-backend"]
+    },
+    {
+      "@id": "incident:log-2026-05-19-001",
+      "@type": "incident:LogEntry",
+      "logId": "incident:log-2026-05-19-001",
+      "timestamp": "2026-05-19T14:30:15Z",
+      "logType": "DATAPOWER",
+      "errorMessage": "HTTP 504 Gateway Timeout - Backend connection timeout after 30s attempting to connect to https://10.20.30.40:8443/member/inquiry",
+      "severity": "HIGH"
+    },
+    {
+      "@id": "incident:log-2026-05-19-002",
+      "@type": "incident:LogEntry",
+      "logId": "incident:log-2026-05-19-002",
+      "timestamp": "2026-05-19T14:30:16Z",
+      "logType": "DATAPOWER",
+      "errorMessage": "Connection refused to backend service at 10.20.30.40:8443 - errno 111 (Connection refused)",
+      "severity": "HIGH"
+    },
+    {
+      "@id": "incident:log-2026-05-19-003",
+      "@type": "incident:LogEntry",
+      "logId": "incident:log-2026-05-19-003",
+      "timestamp": "2026-05-19T14:30:17Z",
+      "logType": "DATAPOWER",
+      "errorMessage": "SSL handshake failed with backend 10.20.30.40:8443 - Connection timed out",
+      "stackTrace": "at SSLSocket.connect(SSLSocket.java:285)\nat BackendConnection.establish(BackendConnection.java:142)\nat APIGateway.forward(APIGateway.java:89)",
+      "severity": "HIGH"
+    },
+    {
+      "@id": "incident:service-member-backend",
+      "@type": "incident:BackendService",
+      "serviceId": "incident:service-member-backend",
+      "serviceName": "Member Service Backend",
+      "endpoint": "https://10.20.30.40:8443",
+      "status": "UNKNOWN",
+      "responseTime": null,
+      "impacts": [
+        "incident:api-member-inquiry",
+        "incident:api-claim-details"
+      ],
+      "relatedTo": ["incident:cause-2026-05-19-001"]
+    },
+    {
+      "@id": "incident:check-2026-05-19-001",
+      "@type": "incident:AdditionalCheck",
+      "checkId": "incident:check-2026-05-19-001",
+      "description": "Review firewall change logs from 14:20-14:30 UTC to identify recent rule modifications",
+      "status": "PENDING",
+      "result": null,
+      "relatedTo": ["incident:cause-2026-05-19-001"]
+    },
+    {
+      "@id": "incident:check-2026-05-19-002",
+      "@type": "incident:AdditionalCheck",
+      "checkId": "incident:check-2026-05-19-002",
+      "description": "Check system resource utilization (CPU, memory, network) on backend member service server",
+      "status": "PENDING",
+      "result": null,
+      "relatedTo": ["incident:service-member-backend"]
+    },
+    {
+      "@id": "incident:check-2026-05-19-003",
+      "@type": "incident:AdditionalCheck",
+      "checkId": "incident:check-2026-05-19-003",
+      "description": "Verify all dependent services are operational and responding normally",
+      "status": "PENDING",
+      "result": null,
+      "relatedTo": ["incident:inc-2026-05-19-001"]
+    },
+    {
+      "@id": "incident:github-issue-123",
+      "@type": "incident:GitHubIssue",
+      "issueId": "123",
+      "url": "https://github.com/company/incident-tracking/issues/123",
+      "title": "Incident: Backend connection timeout affecting member inquiry API",
+      "labels": "incident,high,network,backend",
+      "createdAt": "2026-05-19T14:32:00Z",
+      "relatedTo": ["incident:inc-2026-05-19-001"]
+    }
+  ]
+}

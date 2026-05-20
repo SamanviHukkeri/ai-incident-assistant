@@ -1,0 +1,12 @@
+workflow:
+  name: incident-analysis-workflow
+
+  steps:
+    - name: parse_logs
+      action: analyze_incident
+
+    - name: generate_summary
+      action: create_incident_summary
+
+    - name: github_issue
+      action: create_github_issue

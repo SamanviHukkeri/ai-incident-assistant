@@ -1,0 +1,31 @@
+{
+  "mcpServers": {
+    "ai-incident-assistant-local": {
+      "command": "python",
+      "args": [
+        "src/mcp_server.py"
+      ],
+      "env": {
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "GITHUB_REPO": "${GITHUB_REPO}"
+      },
+      "description": "AI-powered incident analysis and resolution assistant (Local)",
+      "capabilities": {
+        "tools": true,
+        "resources": true,
+        "prompts": true
+      },
+      "disabled": true
+    },
+    "context-studio": {
+      "type": "streamable-http",
+      "url": "https://servicesessentials.ibm.com/mcp-gateway/service/gateway/servers/8ccdd203bdee4014b08e82eedb6046e2/mcp",
+      "headers": {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzaHJhZGRoYS5wYXJpa2gxQGlibS5jb20iLCJqdGkiOiJhZTVlOTViNy04N2NkLTRkZDMtOWUzNi1jODNlNWEyZTk1ZDUiLCJ0b2tlbl91c2UiOiJhcGkiLCJpYXQiOjE3NzkxMDM3MzUsImlzcyI6Im1jcGdhdGV3YXkiLCJhdWQiOiJtY3BnYXRld2F5LWFwaSIsInVzZXIiOnsiZW1haWwiOiJzaHJhZGRoYS5wYXJpa2gxQGlibS5jb20iLCJmdWxsX25hbWUiOiJBUEkgVG9rZW4gVXNlciIsImlzX2FkbWluIjp0cnVlLCJhdXRoX3Byb3ZpZGVyIjoiYXBpX3Rva2VuIn0sInRlYW1zIjpudWxsLCJzY29wZXMiOnsic2VydmVyX2lkIjoiOGNjZGQyMDNiZGVlNDAxNGIwOGU4MmVlZGI2MDQ2ZTIiLCJwZXJtaXNzaW9ucyI6W10sImlwX3Jlc3RyaWN0aW9ucyI6W10sInRpbWVfcmVzdHJpY3Rpb25zIjp7fX0sImV4cCI6MTc4MTY5NTczNX0.NeWsTfLA3DG3u-cKyR-tx2RePwtidctzi6toNL6-Tes"
+      },
+      "description": "IBM Context Studio MCP Gateway",
+      "disabled": false
+    }
+  }
+}

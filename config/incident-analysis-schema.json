@@ -1,0 +1,143 @@
+{
+  "@context": {
+    "incident": "http://ai-incident-assistant.ibm.com/schema#",
+    "schema": "http://schema.org/",
+    "name": "schema:name",
+    "description": "schema:description",
+    "from": {
+      "@id": "incident:from",
+      "@type": "@id"
+    },
+    "to": {
+      "@id": "incident:to",
+      "@type": "@id"
+    },
+    "Entity": "incident:Entity",
+    "Operation": "incident:Operation",
+    "severity": "incident:severity",
+    "timestamp": "schema:dateCreated",
+    "status": "incident:status"
+  },
+  "@graph": [
+    {
+      "id": "incident:Incident",
+      "type": "Entity",
+      "name": "Incident",
+      "description": "Production incident detected in application logs"
+    },
+    {
+      "id": "incident:LogEntry",
+      "type": "Entity",
+      "name": "LogEntry",
+      "description": "Application error log entry from DataPower, APIC, or Java"
+    },
+    {
+      "id": "incident:APIService",
+      "type": "Entity",
+      "name": "APIService",
+      "description": "API service or endpoint affected by the incident"
+    },
+    {
+      "id": "incident:RootCause",
+      "type": "Entity",
+      "name": "RootCause",
+      "description": "AI-detected root cause of the incident"
+    },
+    {
+      "id": "incident:SuggestedFix",
+      "type": "Entity",
+      "name": "SuggestedFix",
+      "description": "Recommended fix or remediation action"
+    },
+    {
+      "id": "incident:GitHubIssue",
+      "type": "Entity",
+      "name": "GitHubIssue",
+      "description": "GitHub issue created for tracking the incident"
+    },
+    {
+      "id": "incident:ErrorDetails",
+      "type": "Entity",
+      "name": "ErrorDetails",
+      "description": "Detailed error information including codes and stack traces"
+    },
+    {
+      "id": "incident:Severity",
+      "type": "Entity",
+      "name": "Severity",
+      "description": "Severity level: CRITICAL, HIGH, MEDIUM, or LOW"
+    },
+    {
+      "id": "incident:HasLog",
+      "type": "Operation",
+      "name": "HasLog",
+      "description": "Incident contains log entries",
+      "from": "incident:Incident",
+      "to": "incident:LogEntry"
+    },
+    {
+      "id": "incident:AffectsAPI",
+      "type": "Operation",
+      "name": "AffectsAPI",
+      "description": "Incident impacts API service",
+      "from": "incident:Incident",
+      "to": "incident:APIService"
+    },
+    {
+      "id": "incident:HasSeverity",
+      "type": "Operation",
+      "name": "HasSeverity",
+      "description": "Incident has severity level",
+      "from": "incident:Incident",
+      "to": "incident:Severity"
+    },
+    {
+      "id": "incident:IndicatesCause",
+      "type": "Operation",
+      "name": "IndicatesCause",
+      "description": "Log entry indicates root cause",
+      "from": "incident:LogEntry",
+      "to": "incident:RootCause"
+    },
+    {
+      "id": "incident:HasError",
+      "type": "Operation",
+      "name": "HasError",
+      "description": "Log entry contains error details",
+      "from": "incident:LogEntry",
+      "to": "incident:ErrorDetails"
+    },
+    {
+      "id": "incident:SuggestsFix",
+      "type": "Operation",
+      "name": "SuggestsFix",
+      "description": "Root cause suggests remediation fix",
+      "from": "incident:RootCause",
+      "to": "incident:SuggestedFix"
+    },
+    {
+      "id": "incident:CreatesIssue",
+      "type": "Operation",
+      "name": "CreatesIssue",
+      "description": "Incident creates GitHub issue for tracking",
+      "from": "incident:Incident",
+      "to": "incident:GitHubIssue"
+    },
+    {
+      "id": "incident:DocumentsFix",
+      "type": "Operation",
+      "name": "DocumentsFix",
+      "description": "GitHub issue documents suggested fix",
+      "from": "incident:GitHubIssue",
+      "to": "incident:SuggestedFix"
+    },
+    {
+      "id": "incident:TracksResolution",
+      "type": "Operation",
+      "name": "TracksResolution",
+      "description": "GitHub issue tracks incident resolution",
+      "from": "incident:GitHubIssue",
+      "to": "incident:Incident"
+    }
+  ]
+}
