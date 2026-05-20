@@ -1,0 +1,40 @@
+tools:
+  - name: analyze_incident
+
+    description: Analyze DataPower/APIC/JAVA incidents and suggest fixes
+
+    endpoint: http://127.0.0.1:8000/analyze/manual
+
+    method: POST
+
+    headers:
+      Content-Type: application/json
+
+    request_schema:
+      type: object
+
+      properties:
+        error_message:
+          type: string
+
+        log_type:
+          type: string
+
+        create_github_issue:
+          type: boolean
+
+    response_schema:
+      type: object
+
+      properties:
+        root_cause:
+          type: string
+
+        severity:
+          type: string
+
+        suggested_fixes:
+          type: array
+
+        affected_apis:
+          type: array

@@ -1,0 +1,8 @@
+workflows:
+
+  - name: incident_resolution_flow
+
+    description: AI workflow for incident analysis
+
+    steps:
+      - analyze_incident
