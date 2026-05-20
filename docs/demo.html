@@ -323,6 +323,10 @@ HTTP 500 backend timeout /member/inquiry failed"></textarea>
                     <p id="rootCause"></p>
                     <span class="severity" id="severityBadge"></span>
                 </div>
+				<div class="result-box">
+    <h3>🕒 Incident Timeline</h3>
+    <ul class="fix-list" id="timelineList"></ul>
+</div>
 
                 <div class="result-box">
                     <h3>🔧 Suggested Fixes</h3>
@@ -508,9 +512,29 @@ HTTP 500 backend timeout /member/inquiry failed"></textarea>
                 span.textContent = api;
                 apiList.appendChild(span);
             });
-        } else {
+        } 
+		else {
             apiList.innerHTML = "<p style='color:#64748b;'>No specific APIs identified</p>";
         }
+		
+		const timelineList = document.getElementById("timelineList");
+timelineList.innerHTML = "";
+
+if (data.incident_timeline && data.incident_timeline.length > 0) {
+
+    data.incident_timeline.forEach(step => {
+
+        const li = document.createElement("li");
+
+        li.textContent = step;
+
+        timelineList.appendChild(li);
+    });
+
+} else {
+
+    timelineList.innerHTML = "<li>No incident timeline generated</li>";
+}
 
         if (data.github_issue_url) {
             document.getElementById("githubSection").style.display = "block";
