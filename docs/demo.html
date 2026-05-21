@@ -727,22 +727,33 @@ function copyAlertMessage() {
     alert("Alert message copied to clipboard");
 }
 
+let lastLoadedFile = "";
+
 async function checkIncomingFolder() {
     try {
         const response = await fetch(`${API_BASE}/watch/latest`);
-
         const data = await response.json();
 
-        if (data.found && data.content) {
+        console.log("Watcher response:", data);
+
+        if (data.found && data.content && data.filename !== lastLoadedFile) {
+
+            lastLoadedFile = data.filename;
+
             document.getElementById("errorText").value = data.content;
+
             document.getElementById("voiceStatus").textContent =
-                "📂 Auto-loaded file: " + data.filename;
+                "📂 Auto-loaded and analyzing file: " + data.filename;
+
+            await analyzeText();
         }
 
     } catch (error) {
         console.log("Folder watch check failed:", error);
     }
 }
+
+setInterval(checkIncomingFolder, 5000);
 
 setInterval(checkIncomingFolder, 5000);
 </script>
