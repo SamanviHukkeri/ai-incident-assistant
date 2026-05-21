@@ -1,3 +1,5 @@
+import os
+
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -96,3 +98,41 @@ async def analyze_uploaded_file(
     logger.info("File incident analysis completed")
 
     return result
+
+
+@app.get("/watch/latest")
+async def watch_latest_file():
+
+    folder_path = "logs/incoming"
+
+    # Create folder if not exists
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    # Find log/txt files
+    files = [
+        os.path.join(folder_path, f)
+        for f in os.listdir(folder_path)
+        if f.lower().endswith(".log") or f.lower().endswith(".txt")
+    ]
+
+    # No files
+    if not files:
+        return {
+            "found": False,
+            "filename": "",
+            "content": ""
+        }
+
+    # Get latest file
+    latest_file = max(files, key=os.path.getmtime)
+
+    # Read content
+    with open(latest_file, "r", encoding="utf-8", errors="ignore") as file:
+        content = file.read()
+
+    return {
+        "found": True,
+        "filename": os.path.basename(latest_file),
+        "content": content
+    }

@@ -726,6 +726,25 @@ function copyAlertMessage() {
 
     alert("Alert message copied to clipboard");
 }
+
+async function checkIncomingFolder() {
+    try {
+        const response = await fetch(`${API_BASE}/watch/latest`);
+
+        const data = await response.json();
+
+        if (data.found && data.content) {
+            document.getElementById("errorText").value = data.content;
+            document.getElementById("voiceStatus").textContent =
+                "📂 Auto-loaded file: " + data.filename;
+        }
+
+    } catch (error) {
+        console.log("Folder watch check failed:", error);
+    }
+}
+
+setInterval(checkIncomingFolder, 5000);
 </script>
 
 </body>
