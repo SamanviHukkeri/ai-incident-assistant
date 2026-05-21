@@ -1,0 +1,32 @@
+workflow:
+  name: AI Incident Resolution Agentic Flow
+  description: ICA multi-agent workflow for incident analysis and automation.
+
+  trigger:
+    type: incident_input
+    sources:
+      - manual_paste
+      - file_upload
+      - voice_input
+      - auto_folder_detection
+
+  steps:
+    - agent: Incident Intake Agent
+      action: receive_incident
+
+    - agent: Incident Analysis Agent
+      action: call_mcp_tool
+      tool: analyze_incident
+
+    - agent: RCA Validation Agent
+      action: validate_root_cause
+
+    - agent: Reporting Agent
+      action: generate_report
+
+    - agent: Notification Agent
+      action: generate_alert_message
+
+    - agent: Ticketing Agent
+      action: create_ticket
+      optional: true

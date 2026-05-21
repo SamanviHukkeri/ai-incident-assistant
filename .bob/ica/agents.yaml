@@ -1,0 +1,41 @@
+agents:
+  - name: Incident Intake Agent
+    role: Receives incident logs from manual upload, voice input, or auto folder detection.
+    responsibilities:
+      - Accept incident text or log content
+      - Identify source of incident
+      - Forward incident to Analysis Agent
+
+  - name: Incident Analysis Agent
+    role: Calls MCP incident analyzer tool.
+    responsibilities:
+      - Invoke analyze_incident MCP tool
+      - Identify root cause
+      - Classify severity
+      - Detect affected APIs
+
+  - name: RCA Validation Agent
+    role: Reviews root cause and severity.
+    responsibilities:
+      - Validate analysis result
+      - Confirm if issue is SSL, timeout, Java, MQ, DB, APIC, or Kubernetes related
+      - Recommend escalation if severity is CRITICAL
+
+  - name: Reporting Agent
+    role: Generates incident report.
+    responsibilities:
+      - Prepare incident summary
+      - Generate incident timeline
+      - Prepare PDF report content
+
+  - name: Notification Agent
+    role: Generates support alert.
+    responsibilities:
+      - Create email or Teams-ready alert message
+      - Include root cause, severity, impacted APIs, and fixes
+
+  - name: Ticketing Agent
+    role: Creates ticket in GitHub or ServiceNow.
+    responsibilities:
+      - Create GitHub issue when required
+      - Prepare ServiceNow payload when integration is enabled
