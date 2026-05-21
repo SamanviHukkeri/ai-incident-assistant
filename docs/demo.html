@@ -264,9 +264,68 @@
     <div class="hero">
         <h1>🤖 AI Incident Resolution Assistant</h1>
         <p>Analyze DataPower, APIC, Java, MQ, SSL and backend production issues instantly</p>
-        <div class="badge">IBM BOB + MCP + Context Studio Ready</div>
+        <div class="badge">Enterprise Agentic AI Platform using IBM BOB + ICA + MCP + Context Studio</div>
+    </div>
+<div class="card" style="margin-bottom:25px;">
+    <h2>🤖 ICA Agentic Flow</h2>
+
+    <div style="
+        display:grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap:14px;
+        margin-top:18px;
+    ">
+
+        <div class="result-box">
+            <h3>1️⃣ Intake Agent</h3>
+            <p>Receives paste, upload, voice, or folder input</p>
+        </div>
+
+        <div class="result-box">
+            <h3>2️⃣ Analysis Agent</h3>
+            <p>Calls MCP analyze_incident tool</p>
+        </div>
+
+        <div class="result-box">
+            <h3>3️⃣ RCA Agent</h3>
+            <p>Validates root cause and severity</p>
+        </div>
+
+        <div class="result-box">
+            <h3>4️⃣ Reporting Agent</h3>
+            <p>Generates timeline and PDF report</p>
+        </div>
+
+        <div class="result-box">
+            <h3>5️⃣ Notification Agent</h3>
+            <p>Creates support alert message</p>
+        </div>
+
+        <div class="result-box">
+            <h3>6️⃣ Ticketing Agent</h3>
+            <p>Creates GitHub / ServiceNow ticket</p>
+        </div>
+
+    </div>
+</div>
+<div class="card" style="margin-bottom:25px;">
+    <h2>🧠 ICA Agent Status</h2>
+
+    <div class="result-box">
+        <h3 id="intakeStatus">⚪ Incident Intake Agent</h3>
+        <p id="intakeText">Waiting for incident input...</p>
     </div>
 
+    <div class="result-box">
+        <h3 id="analysisStatus">⚪ Incident Analysis Agent</h3>
+        <p id="analysisText">Waiting for analysis request...</p>
+    </div>
+
+    <div class="result-box">
+        <h3 id="reportingStatus">⚪ Reporting Notification Agent</h3>
+        <p id="reportingText">Waiting to generate report and alert...</p>
+    </div>
+</div>
     <div class="grid">
 
         <div class="card">
@@ -383,7 +442,7 @@ HTTP 500 backend timeout /member/inquiry failed"></textarea>
         hideError();
 
         try {
-            const response = await fetch(`${API_BASE}/analyze/manual`, {
+            const response = await fetch(`${API_BASE}/orchestrate/analyze`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -400,7 +459,7 @@ HTTP 500 backend timeout /member/inquiry failed"></textarea>
             }
 
             const data = await response.json();
-            displayResults(data);
+displayResults(data.analysis);
 
         } catch (error) {
             showError(`Analysis failed: ${error.message}`);
@@ -756,6 +815,84 @@ async function checkIncomingFolder() {
 setInterval(checkIncomingFolder, 5000);
 
 setInterval(checkIncomingFolder, 5000);
+
+function resetAgentStatus() {
+    document.getElementById("intakeStatus").textContent = "⚪ Incident Intake Agent";
+    document.getElementById("intakeText").textContent = "Waiting for incident input...";
+
+    document.getElementById("analysisStatus").textContent = "⚪ Incident Analysis Agent";
+    document.getElementById("analysisText").textContent = "Waiting for analysis request...";
+
+    document.getElementById("reportingStatus").textContent = "⚪ Reporting Notification Agent";
+    document.getElementById("reportingText").textContent = "Waiting to generate report and alert...";
+}
+
+function updateAgentStatus(agent, status, message) {
+    if (agent === "intake") {
+        document.getElementById("intakeStatus").textContent = status + " Incident Intake Agent";
+        document.getElementById("intakeText").textContent = message;
+    }
+
+    if (agent === "analysis") {
+        document.getElementById("analysisStatus").textContent = status + " Incident Analysis Agent";
+        document.getElementById("analysisText").textContent = message;
+    }
+
+    if (agent === "reporting") {
+        document.getElementById("reportingStatus").textContent = status + " Reporting Notification Agent";
+        document.getElementById("reportingText").textContent = message;
+    }
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function simulateAgentFlowStart(source) {
+    resetAgentStatus();
+
+    updateAgentStatus(
+        "intake",
+        "🟡",
+        "Receiving incident from " + source + "..."
+    );
+
+    await sleep(800);
+
+    updateAgentStatus(
+        "intake",
+        "✅",
+        "Incident received and prepared for downstream analysis."
+    );
+
+    updateAgentStatus(
+        "analysis",
+        "🟡",
+        "Calling MCP analyze_incident tool and analyzing root cause..."
+    );
+}
+
+async function simulateAgentFlowComplete() {
+    updateAgentStatus(
+        "analysis",
+        "✅",
+        "Analysis completed. Root cause, severity, affected systems, and timeline generated."
+    );
+
+    updateAgentStatus(
+        "reporting",
+        "🟡",
+        "Preparing incident summary, PDF report content, and support alert..."
+    );
+
+    await sleep(800);
+
+    updateAgentStatus(
+        "reporting",
+        "✅",
+        "Report and alert content are ready for support team action."
+    );
+}
 </script>
 
 </body>
